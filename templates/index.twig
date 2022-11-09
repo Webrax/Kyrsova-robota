@@ -1,31 +1,35 @@
 {% extends 'base.twig' %}
 
 {% block body %}
-    <!--інфо карточки-->
-<div class="container">
-    <h1 class="mb-3 mt-3">Welcome to my Blog!</h1>
-        {% set rowCount = 1 %} {# кіл-ть постів #}
-        {% for post in posts %}
-        {% if rowCount == 1 %}
-            <div class="container row">
-                {% endif %}
-                <div class="p-1">
-                    <div class="card" style="width: 18rem;">
-                        <img src="https://dummyimage.com/300x200/5b76ba/ffffff" class="card-img-top" alt="{{ post.title|escape }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ post.title|escape }}</h5>
-                            <p class="card-text">{{ post.description|escape }}</p>
-                            <a href="/{{ post.url_key }}" class="btn btn-primary">Read more</a>
+    <div class="container">
+        <h3 class="mb-3 mt-3">Latest Posts</h3>  {# build contruct for start page #}
+        <div class="row">
+            <div class="col-md-9">
+                {% for post in posts %}
+                    <div class="row mb-2 bg-light" style="border: 1px solid #ddd;">
+                        <div class="p-3">
+                            {% if post.image_path is not null %}
+                                <img src="{{ post.image_path }}" class="card-img-top" alt="{{ post.title|escape }}">
+                            {% endif %}
+                            <div class="mt-3">
+                                <h5 class="card-title">{{ post.title|escape }}</h5>
+                                <span class="text-muted">Malevych Yurii | {{ post.published_date|date("F d, Y") }}</span>
+                                <p class="mt-2">{{ post.description|escape }}</p>
+                                <a href="/{{ post.url_key }}" class="btn btn-primary">Read more</a>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+                <div class="row">
+                    <strong><font size="6"><a href="/site" class="mt-3">View all</a></font></strong>
                 </div>
-            {% set rowCount = rowCount + 1 %} {# дозволяє відмалювати ше 1 контейнер роу, коли кіл-ть постів більше 3#}
-            {% if rowCount == 1 %}
             </div>
-            {% endif %}
-            {% if rowCount > 3 %}
-            {% set rowCount = 1 %}
-            {% endif %}
-            {% endfor %}
-</div>
+            <div class="col-md-3">
+                <div class="container">
+                    <h4>About</h4>
+                    <p>Hello, my name is Yurii Malevych. I am a web developer.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

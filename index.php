@@ -23,13 +23,12 @@ try {  // конект БД, написання повідомлення про 
     die();
 }
 
-$postMapper = new PostMapper($connection); // підключення класу постмапер, який відповідає за завантаження контенту БД
-
 /* Create app */
 $app = AppFactory::create();
 
-$app->get('/', function (Request $request, Response $response, $args) use ($view, $postMapper) { // хоум пейдж
-    $posts = $postMapper->getList('ASC'); // сортування постів за датою (часом)
+$app->get('/site', function (Request $request, Response $response) use ($view, $connection) { // хоум пейдж
+    $latestPosts = new \Blog\LatestPosts($connection);
+    $posts = $latestPosts->get(3); // сортування постів за датою (часом)
 
     $body = $view->render('index.twig', [
         'posts' => $posts
@@ -46,7 +45,9 @@ $app->get('/about', function (Request $request, Response $response, $args) use (
     return $response;
 });
 
-$app->get('/{url_key}', function (Request $request, Response $response, $args) use ($view, $postMapper)  { // оформлення читабельних ЮРЛ
+$app->get('/{url_key}', function (Request $request, Response $response, $args) use ($view, $connection)  { // оформлення читабельних ЮРЛ
+    $postMapper = new PostMapper($connection); // підключення класу постмапер, який відповідає за завантаження контенту БД
+
     $post = $postMapper->getByUrlKey((string) $args['url_key']);
 
     if (empty($post)) { // відмалювання шаблону помилки
