@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="container">
-        <h3 class="mb-3 mt-3">Latest Posts</h3>  {# build contruct for start page #}
+        <h3 class="mb-3 mt-3">Останні пости</h3>  {# build contruct for start page #}
         <div class="row">
             <div class="col-md-9">
                 {% for post in posts %}
@@ -13,21 +13,21 @@
                             {% endif %}
                             <div class="mt-3">
                                 <h5 class="card-title">{{ post.title|escape }}</h5>
-                                <span class="text-muted">Malevych Yurii | {{ post.published_date|date("F d, Y") }}</span>
+                                <span class="text-muted">Малевич Юрій | {{ post.published_date|date("F d, Y") }}</span>
                                 <p class="mt-2">{{ post.description|escape }}</p>
-                                <a href="/{{ post.url_key }}" class="btn btn-primary">Read more</a>
+                                <a href="/{{ post.url_key }}" class="btn btn-primary">Читати далі</a>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
                 <div class="row">
-                    <strong><font size="6"><a href="/site" class="mt-3">View all</a></font></strong>
+                    <strong><font size="6"><a href="/site" class="mt-3">Дивитись все</a></font></strong>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="container">
                     <h4>About</h4>
-                    <p>Hello, my name is Yurii Malevych. I am a web developer.</p>
+                    <p>Всім привіт! Мене звати Малевич Юрій, я web developer.</p>
                 </div>
             </div>
         </div>

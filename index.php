@@ -9,6 +9,7 @@ require __DIR__ . '/vendor/autoload.php'; // запит на виконання 
 $loader = new \Twig\Loader\FilesystemLoader('templates'); // підключення шаблонів твіг
 $view = new \Twig\Environment($loader);
 
+
 $config = include 'config/database.php'; // логіка БД
 $dsn = $config['dsn'];
 $username = $config['username'];
@@ -26,6 +27,9 @@ try {  // конект БД, написання повідомлення про 
 /* Create app */
 $app = AppFactory::create();
 
+$app->addErrorMiddleware(true, true, true); // відмалювання помилок при завантаженні
+
+
 $app->get('/site', function (Request $request, Response $response) use ($view, $connection) { // хоум пейдж
     $latestPosts = new \Blog\LatestPosts($connection);
     $posts = $latestPosts->get(3); // сортування постів за датою (часом)
@@ -39,7 +43,7 @@ $app->get('/site', function (Request $request, Response $response) use ($view, $
 
 $app->get('/about', function (Request $request, Response $response, $args) use ($view) { // ебаут пейдж
     $body = $view->render('about.twig', [
-        'name' => 'Yurii'
+        'name' => 'користувач'
         ]);
     $response->getBody()->write($body);
     return $response;
