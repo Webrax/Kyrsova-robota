@@ -43,9 +43,17 @@ $app->get('/site', function (Request $request, Response $response) use ($view, $
     return $response;
 });
 
+$app->get('/history', function (Request $request, Response $response) use ($view) { // ебаут пейдж
+    $body = $view->render('istoriya.twig', [
+        'name' => 'шановний користувач'
+    ]);
+    $response->getBody()->write($body);
+    return $response;
+});
+
 $app->get('/about', function (Request $request, Response $response) use ($view) { // ебаут пейдж
     $body = $view->render('about.twig', [
-        'name' => 'користувач'
+        'name' => 'шановний користувач'
     ]);
     $response->getBody()->write($body);
     return $response;
