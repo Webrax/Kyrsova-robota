@@ -56,15 +56,20 @@ $app->get('/about', function (Request $request, Response $response) use ($view) 
 
 $app->get('/blog[/{page}]' /* це опціональний параметр, спрацьовує внутрішній патерн*/, function (Request $request, Response $response, $args) use ($view, $connection) {
     // блог (пагінація) пейдж
-    $latestPosts = new PostMapper($connection);
+    $postMapper = new PostMapper($connection);
 
     $page = isset($args['page']) ? (int) $args['page'] : 1;
-    $limit = 3;
+    $limit = 3; // макс кіл-ть постів на 1 ст
 
-    $posts = $latestPosts->getList($page, $limit, 'DESC'); // сортування постів за датою (часом)
+    $posts = $postMapper->getList($page, $limit, 'DESC'); // сортування постів за датою (часом)
 
+    $totalcount = $postMapper->getTotalCount(); // загальна кіл-ть сторінок для пагінації
     $body = $view->render('blog.twig', [
-        'posts' => $posts
+        'posts' => $posts,
+        'pagination' => [ // реалізація роботи пагінації
+            'current' => $page,// конкретна сторінка
+            'paging' => ceil( $totalcount / $limit) // функція сеіл робить округлення
+        ]
     ]);
     $response->getBody()->write($body);
     return $response;

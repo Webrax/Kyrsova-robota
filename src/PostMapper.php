@@ -53,4 +53,14 @@ class PostMapper /*загрузка і вигрузка контенту з БД
 
         return $statement->fetchAll();
     }
+
+    public function getTotalCount(): int // вертає ціле число (кіл-ть сторінок)
+    {
+        $statement = $this->connection->prepare('SELECT count(post_id) as total FROM post');
+        $statement->execute();
+
+        return (int) ($statement->fetchColumn() ?? 0);
+        // fetchcolumn це з бібліотеки PDO
+        // ?? значить: якщо результат є, то він виводиться, якщо немає, тоді 0
+    }
 }
