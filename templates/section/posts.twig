@@ -2,7 +2,8 @@
     <div class="row mb-2 bg-light" style="border: 1px solid #ddd;">
         <div class="p-3">
             {% if post.image_path is not null %}
-            <img src="{{ asset_url(post.image_path) }}" class="card-img-top" alt="{{ post.title|escape }}"><!--фікс багу методом asset_url, який не виводив картинки на сторінках блогу-->
+            <img src="{{ asset_url(post.image_path) }}" class="card-img-top" alt="{{ post.title|escape }}"><!--фікс багу методом asset_url,
+            який не виводив картинки на сторінках блогу 1/2/3-->
             {% endif %}
             <div class="mt-3">
                 <h5 class="card-title">{{ post.title|escape }}</h5>

@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-class AssetExtension extends AbstractExtension
+class AssetExtension extends AbstractExtension // АбстрактЕкстеншин це розширення твігу для роботи з ЮРЛ
 {
     private ServerRequestInterface $request;
 
@@ -15,12 +15,12 @@ class AssetExtension extends AbstractExtension
         $this->request = $request;
     }
 
-    public function getFunctions()
+    public function getFunctions() // викликає функцію, яка обробляє asset_url, url, base_url
    {
        return [
-           new TwigFunction('asset_url', [$this, 'getAssetUrl']), // фікс вивода картинок на блог/1/2/3
-           new TwigFunction('url', [$this, 'getUrl']), // фікс вивода картинок на блог/1/2/3
-           new TwigFunction('base_url', [$this, 'getBaseUrl']), // фікс вивода картинок на блог/1/2/3
+           new TwigFunction('asset_url', [$this, 'getAssetUrl']), // фікс вивода картинок на блог 1/2/3
+           new TwigFunction('url', [$this, 'getUrl']), // зміна навігації
+           new TwigFunction('base_url', [$this, 'getBaseUrl']),
 
        ];
    }
@@ -32,7 +32,7 @@ class AssetExtension extends AbstractExtension
 
    public function getBaseUrl(): string
    {
-       $params = $this->request->getServerParams();
+       $params = $this->request->getServerParams();  // функція виводу картинок на блог 1/2/3
        return 'http' . '://' . $params['HTTP_HOST'] . '/';
    }
 
