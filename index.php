@@ -1,38 +1,43 @@
 <?php
+
+use Blog\LatestPosts;
+use Blog\Slim\TwigMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 use Blog\PostMapper;
 
-require __DIR__ . '/vendor/autoload.php'; // запит на виконання лоадеру
+require __DIR__ . '/vendor/autoload.php';
 
-$loader = new \Twig\Loader\FilesystemLoader('templates'); // підключення шаблонів твіг
-$view = new \Twig\Environment($loader);
+$loader = new FilesystemLoader('templates');
+$view = new Environment($loader);
 
 
-$config = include 'config/database.php'; // логіка БД
+$config = include 'config/database.php';
 $dsn = $config['dsn'];
 $username = $config['username'];
 $password = $config['password'];
 
-try {  // конект БД, написання повідомлення про ерор
+try {
     $connection = new PDO($dsn, $username, $password);
     $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $exception) {
-    echo 'Database error: ' .$exception->getMessage();
+    echo 'Database error: ' . $exception->getMessage();
     die();
 }
 
-/* Create app */
+// Create app
 $app = AppFactory::create();
 
-$app->addErrorMiddleware(true, true, true); // відмалювання помилок при завантаженні
+$app->add(new TwigMiddleware($view));
 
 
-$app->get('/site', function (Request $request, Response $response) use ($view, $connection) { // хоум пейдж
-    $latestPosts = new \Blog\LatestPosts($connection);
-    $posts = $latestPosts->get(3); // сортування постів за датою (часом)
+$app->get('/site', function (Request $request, Response $response) use ($view, $connection) {
+    $latestPosts = new LatestPosts($connection);
+    $posts = $latestPosts->get(3);
 
     $body = $view->render('index.twig', [
         'posts' => $posts
@@ -41,22 +46,36 @@ $app->get('/site', function (Request $request, Response $response) use ($view, $
     return $response;
 });
 
-$app->get('/about', function (Request $request, Response $response, $args) use ($view) { // ебаут пейдж
+$app->get('/about', function (Request $request, Response $response) use ($view) {
     $body = $view->render('about.twig', [
         'name' => 'користувач'
-        ]);
+    ]);
     $response->getBody()->write($body);
     return $response;
 });
 
-$app->get('/{url_key}', function (Request $request, Response $response, $args) use ($view, $connection)  { // оформлення читабельних ЮРЛ
-    $postMapper = new PostMapper($connection); // підключення класу постмапер, який відповідає за завантаження контенту БД
+$app->get('/blog[/{page}]', function (Request $request, Response $response, $args) use ($view, $connection) {
+    $latestPosts = new PostMapper($connection);
 
+    $page = isset($args['page']) ? (int) $args['page'] : 1;
+    $limit = 3;
+
+    $posts = $latestPosts->getList($page, $limit, 'DESC');
+
+    $body = $view->render('blog.twig', [
+        'posts' => $posts
+    ]);
+    $response->getBody()->write($body);
+    return $response;
+});
+
+$app->get('/{url_key}', function (Request $request, Response $response, $args) use ($view, $connection) {
+    $postMapper = new PostMapper($connection);
     $post = $postMapper->getByUrlKey((string) $args['url_key']);
 
-    if (empty($post)) { // відмалювання шаблону помилки
+    if (empty($post)) {
         $body = $view->render('not-found.twig');
-    } else { // конект постмаппер класу
+    } else {
         $body = $view->render('post.twig', [
             'post' => $post
         ]);

@@ -37,12 +37,17 @@ class PostMapper /*загрузка і вигрузка контенту з БД
         return array_shift($result);
     }
 
-    public function getList(string $direction): ?array //  сортування і вивід постів за датою (часом)
+    public function getList(int $page = 1, int $limit = 3, string $direction = 'ASC'): ?array //  сортування і вивід постів за датою (часом)
     {
         if (!in_array($direction, ['DESC', 'ASC'])) {
             throw new Exception('The direction is not supported.');
         }
-        $statement = $this->connection->prepare('SELECT * FROM post ORDER BY published_date ' . $direction);
+
+        $start = ($page - 1) * $limit; // логіка правильного сортування, -1 тому що старт іде з нульової позиції
+        $statement = $this->connection->prepare(
+            'SELECT * FROM post ORDER BY published_date ' . $direction .
+            ' LIMIT ' . $start . ',' . $limit
+        );
 
         $statement->execute();
 

@@ -8,10 +8,15 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="/site">Початкова сторінка</a>
+                    <a class="nav-link" href="{{ url('blog') }}">Всі пости</a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" href="/about">Інше</a>
+                    <a class="nav-link" href="{{ url('site') }}">Головна сторінка</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('about') }}">Інше</a>
                 </li>
             </ul>
         </div>
