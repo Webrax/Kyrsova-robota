@@ -33,7 +33,8 @@ class AssetExtension extends AbstractExtension // АбстрактЕкстенш
    public function getBaseUrl(): string
    {
        $params = $this->request->getServerParams();  // функція виводу картинок на блог 1/2/3
-       return 'http' . '://' . $params['HTTP_HOST'] . '/';
+       $scheme = $params['REQUEST_SCHEME'] ?? 'http';
+       return  $scheme . '://' . $params['HTTP_HOST'] . '/';
    }
 
    public function getUrl(string $path): string

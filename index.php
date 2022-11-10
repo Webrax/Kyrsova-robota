@@ -11,9 +11,15 @@ use Blog\PostMapper;
 
 require __DIR__ . '/vendor/autoload.php'; // запит на виконання лоадеру
 
-$loader = new FilesystemLoader('templates'); // підключення шаблонів твіг
-$view = new Environment($loader);
+// $loader = new FilesystemLoader('templates'); // підключення шаблонів твіг
+// $view = new Environment($loader);
 
+$builder = new \DI\ContainerBuilder(); // використання php-di
+$builder->addDefinitions('config/di.php');
+
+$container = $builder->build();
+
+AppFactory::setContainer($container); // що б слім бачив контейнери
 
 $config = include 'config/database.php'; // логіка БД
 $dsn = $config['dsn'];
@@ -32,6 +38,7 @@ try { // конект БД, написання повідомлення про �
 // Create app
 $app = AppFactory::create();
 
+$view = $container->get(Environment::class);
 $app->add(new TwigMiddleware($view)); // відмалювання помилок при завантаженні
 
 

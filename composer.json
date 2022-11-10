@@ -5,6 +5,7 @@
     "minimum-stability": "stable",
     "require": {
         "slim/slim": "4.*",
+        "php-di/php-di": "*",
         "slim/psr7": "^1.6",
         "twig/twig": "^3.4",
         "ext-pdo": "*"
