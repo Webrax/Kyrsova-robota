@@ -1,7 +1,9 @@
 <?php
 
+use Blog\Database;
 use Blog\LatestPosts;
 use Blog\Slim\TwigMiddleware;
+use DevCoder\DotEnv;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -16,24 +18,11 @@ require __DIR__ . '/vendor/autoload.php'; // запит на виконання 
 
 $builder = new \DI\ContainerBuilder(); // використання php-di
 $builder->addDefinitions('config/di.php');
+(new DotEnv(__DIR__ . '/.env'))->load(); // використання бібліотеки php-dotenv (підтримка .енв файлів)
 
 $container = $builder->build();
 
 AppFactory::setContainer($container); // що б слім бачив контейнери
-
-$config = include 'config/database.php'; // логіка БД
-$dsn = $config['dsn'];
-$username = $config['username'];
-$password = $config['password'];
-
-try { // конект БД, написання повідомлення про ерор
-    $connection = new PDO($dsn, $username, $password);
-    $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $exception) {
-    echo 'Database error: ' . $exception->getMessage();
-    die();
-}
 
 // Create app
 $app = AppFactory::create();
@@ -41,6 +30,7 @@ $app = AppFactory::create();
 $view = $container->get(Environment::class);
 $app->add(new TwigMiddleware($view)); // відмалювання помилок при завантаженні
 
+$connection = $container->get(Database::class)->getConnection(); // передача запиту на підключення в PDO
 
 $app->get('/site', function (Request $request, Response $response) use ($view, $connection) { // старт пейдж
     $latestPosts = new LatestPosts($connection);
